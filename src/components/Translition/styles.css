@@ -1,0 +1,373 @@
+section {
+  display: flex;
+  flex-direction: column;
+  gap: 60px;
+}
+
+.addWord {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  border: 2px solid #111;
+  border-radius: 14px;
+  padding: 14px 10px;
+  margin-top: 26px;
+  max-height: 50px;
+}
+
+input {
+  font-family: "Cormorant", serif;
+  border: none;
+  width: 100%;
+  font-size: 18px;
+}
+input:focus {
+  outline: none;
+}
+input::placeholder {
+  padding-left: 2px;
+  opacity: 0.5;
+}
+
+.addBtn {
+  width: 107px;
+  height: 38px;
+  border: none;
+  outline: none;
+  color: #fff;
+  background: #111;
+  cursor: pointer;
+  position: relative;
+  z-index: 0;
+  border-radius: 8px;
+}
+
+.addBtn {
+  &:before {
+    content: "";
+    background: linear-gradient(
+      45deg,
+      #ff0000,
+      #ff7300,
+      #fffb00,
+      #48ff00,
+      #00ffd5,
+      #002bff,
+      #7a00ff,
+      #ff00c8,
+      #ff0000
+    );
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    background-size: 400%;
+    z-index: -1;
+    filter: blur(5px);
+    width: calc(100% + 4px);
+    height: calc(100% + 4px);
+    animation: glowing 20s linear infinite;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    border-radius: 10px;
+  }
+
+  &:active {
+    color: #000;
+  }
+
+  &:active:after {
+    background: transparent;
+  }
+
+  &:hover:before {
+    opacity: 1;
+  }
+
+  &:after {
+    z-index: -1;
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: #111;
+    left: 0;
+    top: 0;
+    border-radius: 10px;
+  }
+}
+
+.message {
+  white-space: normal;
+  word-wrap: break-word;
+  margin: 10px 0;
+  padding: 10px;
+  background-color: #e0ffe0;
+  color: #333;
+  border: 1px solid #b2ffb2;
+  border-radius: 5px;
+}
+
+.listWord {
+  font-family: "Podkova", serif;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-column-gap: 0px;
+  grid-row-gap: 0px;
+  background: #f0f0f0;
+  border: 0px solid #4520ab;
+  border-radius: 8px;
+  min-height: 200px;
+}
+
+.leftBlock {
+  border-right: 2px solid #111;
+  .words {
+    display: flex;
+    justify-content: flex-start;
+  }
+}
+
+.rightBlock {
+  position: relative;
+  z-index: 1;
+  .words {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #000;
+    opacity: 0.1;
+    z-index: -1;
+    border-radius: 0 8px 8px 0;
+  }
+
+  button {
+    width: 18px;
+    height: 18px;
+    border: none;
+    border-radius: 100%;
+    align-self: center;
+
+    &:hover {
+      svg circle {
+        fill: red;
+      }
+      svg:active {
+        position: relative;
+        top: 2px;
+        left: 2px;
+      }
+    }
+  }
+}
+
+.words {
+  height: 40px;
+  padding: 0 12px;
+
+  > div {
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  span {
+    align-content: center;
+    font-size: 14px;
+    font-weight: 600;
+    padding-right: 12px;
+  }
+  p {
+    padding-left: 16px;
+  }
+}
+
+.words:not(:last-child) {
+  border-bottom: 1px solid #111;
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip::after {
+  content: attr(data-title);
+  position: absolute;
+  font-size: 16px;
+  color: #111;
+  left: 15px;
+  top: 5px;
+  padding: 5px;
+  border-radius: 5px;
+  white-space: normal;
+  word-wrap: break-word;
+  visibility: hidden;
+  width: 133px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.1);
+  background: #fff;
+  border-radius: 10px;
+  padding: 8px 16px 10px 16px;
+  z-index: 10;
+}
+
+.tooltip[data-title]:hover::after {
+  visibility: visible;
+  opacity: 1;
+}
+
+.wordText {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 96px;
+  align-content: center;
+}
+
+.reset {
+  position: relative;
+  display: flex;
+  align-self: center;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 8px;
+  padding: 6px 10px 8px 10px;
+  width: 176px;
+  height: 38px;
+  background: #adadad;
+  font-weight: 400;
+  font-size: 18px;
+  color: #0f0f0f;
+
+  svg {
+    height: 24px;
+    width: 24px;
+  }
+
+  &:hover {
+    background: rgb(208, 78, 78);
+    color: white;
+  }
+
+  &:hover svg circle {
+    fill: rgb(128, 30, 0);
+  }
+  &:active {
+    top: 2px;
+    left: 2px;
+  }
+}
+
+@keyframes glowing {
+  0% {
+    background-position: 0 0;
+  }
+  50% {
+    background-position: 400% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .tooltip::after {
+    width: 100%;
+    max-width: 100px;
+  }
+}
+
+@media (max-width: 400px) {
+  h1 {
+    font-size: 30px;
+  }
+  [data-title]::after {
+    left: 6px;
+  }
+}
+
+@media (min-width: 376px) {
+  .deleteBtnLeftBlock {
+    display: none;
+  }
+  .indexRightBlock {
+    display: none;
+  }
+}
+
+@media (max-width: 375px) {
+  main {
+    margin: 20px auto;
+    padding: 0 16px;
+  }
+  section {
+    gap: 16px;
+  }
+
+  h1 {
+    font-size: 25px;
+    width: 100%;
+  }
+
+  .words {
+    span {
+      padding-right: 0;
+    }
+  }
+
+  .addWord {
+    margin-top: 22px;
+    margin-bottom: 16px;
+  }
+  .listWord {
+    display: flex;
+    flex-direction: column;
+  }
+  .leftBlock {
+    border-right: none;
+    border-bottom: 2px solid #111;
+    min-height: 100px;
+    .words {
+      justify-content: space-between;
+    }
+  }
+
+  .deleteBtnLeftBlock {
+    width: 18px;
+    height: 18px;
+    border: none;
+    border-radius: 100%;
+    align-self: center;
+
+    &:hover {
+      svg circle {
+        fill: red;
+      }
+      svg:active {
+        position: relative;
+        top: 2px;
+        left: 2px;
+      }
+    }
+  }
+
+  .tooltip::after {
+    max-width: 133px;
+  }
+
+  .rightBlock {
+    min-height: 100px;
+    &::before {
+      border-radius: 0 0 8px 8px;
+    }
+  }
+}
