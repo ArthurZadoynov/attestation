@@ -1,15 +1,29 @@
 import "./styles.css";
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import translit from "cyrillic-to-translit-js";
 import DeleteSvg from "../../assets/delete.svg?react";
 
 const TranslitList = () => {
   const [inputValue, setInputValue] = useState("");
   const [words, setWords] = useState([
-    { original: "Привет 👋🏻", transliterated: "Privet" },
+    {
+      original: (
+        <>
+          Привет{" "}
+          <span className="hello" style={{ fontSize: "15px" }}>
+            👋🏻{" "}
+          </span>
+        </>
+      ),
+      transliterated: "Privet",
+    },
   ]);
-  const [message, setMessage] = useState("");
-  const textRefs = useRef([]);
+  const leftTextRefs = useRef([]);
+  const rightTextRefs = useRef([]);
+  const [truncatedStates, setTruncatedStates] = useState({
+    left: [],
+    right: [],
+  });
 
   const handleAddWord = () => {
     if (inputValue.trim() === "") return;
@@ -19,25 +33,19 @@ const TranslitList = () => {
       transliterated: translit().transform(inputValue),
     };
 
-    setWords([...words, newWord]);
-    setMessage(`Текст ${inputValue} успешно добавлен!`);
+    setWords((prevWords) => [...prevWords, newWord]);
     console.log(newWord);
     setInputValue("");
-    setTimeout(() => setMessage(""), 2000);
   };
 
   const handleDeleteWord = (index) => {
     if (index === 0) return;
     const newWords = words.filter((_, i) => i !== index);
     setWords(newWords);
-    setMessage(`Текст "${words[index].original}" успешно удален!`);
-    setTimeout(() => setMessage(""), 2000);
   };
 
   const handleResetWords = () => {
     setWords([{ original: "Привет", transliterated: "Privet" }]);
-    setMessage(<strong>Список очищен!</strong>);
-    setTimeout(() => setMessage(""), 2000);
   };
 
   const handleKeyPress = (event) => {
@@ -46,15 +54,36 @@ const TranslitList = () => {
     }
   };
 
-  const isTruncated = (index) => {
-    const textElement = textRefs.current[index];
-    if (textElement) {
-      const containerWidth = textElement.clientWidth;
-      const textWidth = textElement.scrollWidth;
-      return textWidth > containerWidth;
-    }
-    return false;
-  };
+  const checkTruncation = useCallback(() => {
+    const leftStates = words.map((_, index) => {
+      const textElement = leftTextRefs.current[index];
+      if (textElement) {
+        const containerWidth = textElement.clientWidth;
+        const textWidth = textElement.scrollWidth;
+        return textWidth > containerWidth;
+      }
+      return false;
+    });
+
+    const rightStates = words.map((_, index) => {
+      const textElement = rightTextRefs.current[index];
+      if (textElement) {
+        const containerWidth = textElement.clientWidth;
+        const textWidth = textElement.scrollWidth;
+        return textWidth > containerWidth;
+      }
+      return false;
+    });
+
+    setTruncatedStates({ left: leftStates, right: rightStates });
+  }, [words]);
+
+  useEffect(() => {
+    leftTextRefs.current = leftTextRefs.current.slice(0, words.length);
+    rightTextRefs.current = rightTextRefs.current.slice(0, words.length);
+
+    checkTruncation();
+  }, [words, checkTruncation]);
 
   return (
     <section className="container">
@@ -71,19 +100,20 @@ const TranslitList = () => {
           Перевести
         </button>
       </div>
-      {message && <div className="message">{message}</div>}
       <div className="listWord">
         <div className="leftBlock">
           {words.map((word, index) => (
             <div className="words" key={index}>
               <div
                 className="tooltip"
-                data-title={isTruncated(index) ? word.original : undefined}
+                data-title={
+                  truncatedStates.left[index] ? word.original : undefined
+                }
               >
-                <span>{index + 1}</span>
+                <span className="number">{index + 1}</span>
                 <p
-                  className="wordText"
-                  ref={(el) => (textRefs.current[index] = el)}
+                  className={`wordText ${index !== 0 ? "truncate" : ""}`}
+                  ref={(el) => (leftTextRefs.current[index] = el)}
                 >
                   {word.original}
                 </p>
@@ -104,13 +134,13 @@ const TranslitList = () => {
               <div
                 className="tooltip"
                 data-title={
-                  isTruncated(index) ? word.transliterated : undefined
+                  truncatedStates.right[index] ? word.transliterated : undefined
                 }
               >
                 <span className="indexRightBlock">{index + 1}</span>
                 <p
-                  className="wordText"
-                  ref={(el) => (textRefs.current[index] = el)}
+                  className={`wordText ${index !== 0 ? "truncate" : ""}`}
+                  ref={(el) => (rightTextRefs.current[index] = el)}
                 >
                   {word.transliterated}
                 </p>
